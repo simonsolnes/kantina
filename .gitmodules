@@ -1,0 +1,3 @@
+[submodule "colorstring"]
+	path = colorstring
+	url = https://github.com/simonsolnes/colorstring

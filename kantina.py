@@ -2,22 +2,29 @@
 import requests
 import scrapy
 from pprint import pprint
+from colorstring import Color
 
+print_extra = False
 def print_menu(data):
     for cafe, categories in data.items():
-        print('# ', cafe + ':', end='\n\n')
+        print(Color(cafe.upper(), 'bold'))
+        print(Color("=" * len(cafe), 'bold'), '\n')
         for category, dishes in categories.items():
-            print('## ', category)
+            print(Color(category + ':', 'bold'))
             for dish in dishes:
-                print('\t• ',
-                    dish.get('title', 'unnamed'),
-                    ' ',
-                    dish.get('price', 'unknown price'))
-                print('\t  ', dish.get('description', ''), end='')
-                if 'allergener' in dish:
-                    print(' [' + dish.get('allergener', '') + ']', end='')
-                if 'attribute' in dish:
-                    print(' [' + dish.get('attribute', '') + ']', end='')
+                print('  ',
+                    Color(dish.get('title', 'unnamed'), 'bold'),
+                )
+                print('  ',
+                    Color(dish.get('description', ''), 'faint'),
+                    Color(dish.get('price', 'unknown price'), 'faint'),
+                    end=''
+                )
+                if print_extra:
+                    if 'allergener' in dish:
+                        print(' [' + dish.get('allergener', '') + ']', end='')
+                    if 'attribute' in dish:
+                        print(' [' + dish.get('attribute', '') + ']', end='')
                 print()
             print()
 
@@ -32,7 +39,7 @@ def get_menu():
 
     def parse_item(sel):
         retval = {}
-        retval['price'] = sel.xpath('div[contains(@class, "views-field-field-price")]/div/text()').extract_first()
+        retval['price'] = sel.xpath('div[contains(@class, "views-field-field-price")]/div/text()').extract_first().rstrip().lstrip()
         title_section = sel.xpath('div[contains(@class, "views-field-nothing")]/span')
         retval['title'] = title_section.xpath('strong/text()').extract_first().rstrip()
         if title_section.xpath('div/img'):
